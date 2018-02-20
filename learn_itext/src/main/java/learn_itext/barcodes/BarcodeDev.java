@@ -1,4 +1,4 @@
-package learn_itext;
+package learn_itext.barcodes;
 
 import com.lowagie.text.Rectangle;
 

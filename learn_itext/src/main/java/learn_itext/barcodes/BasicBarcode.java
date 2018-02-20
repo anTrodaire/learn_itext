@@ -1,4 +1,4 @@
-package learn_itext;
+package learn_itext.barcodes;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
