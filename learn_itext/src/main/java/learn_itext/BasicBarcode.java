@@ -11,7 +11,7 @@ import com.lowagie.text.pdf.PdfWriter;
 
 public class BasicBarcode {
 
-	private static final String DEST = "D:/Users/Alex/Desktop/basic_barcode.pdf";
+	private static final String DEST = "C:/Users/axp338/Desktop/basic_barcode.pdf";
 
 	public static void main(String[] args) {
 		Document doc = new Document();
