@@ -1,17 +1,13 @@
 package learn_itext;
 
-import com.lowagie.text.FontFactory;
-
-import com.lowagie.text.Font;
-
-import com.lowagie.text.pdf.BaseFont;
-
-import com.lowagie.text.Paragraph;
-
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
+import com.lowagie.text.Font;
+import com.lowagie.text.FontFactory;
+import com.lowagie.text.Paragraph;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.Barcode39;
+import com.lowagie.text.pdf.BaseFont;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -56,21 +52,13 @@ public class BarcodeTest {
 
     final List<BarcodeInfo> barcodes = new ArrayList<BarcodeInfo>();
 
-    final BarcodeInfo test = new BarcodeInfo("8212-15-09-0072-01", 1, 1);
+    final BarcodeInfo test = new BarcodeInfo("8212-15-09-0072-01", 2, 5);
     barcodes.add(test);
 
     // Create and populate a page for each barcode
     for (int i = 0; i < barcodes.size(); i++) {
       BarcodeInfo codeInfo = barcodes.get(i);
-      // document.newPage();
-
-      // Set the page to the right size (honestly not sure which are
-      // necessary but it works)
-      // page.setMediaBox(box);
-      // page.setBleedBox(box);
-      // page.setCropBox(box);
-      // page.setTrimBox(box);
-      // document.addPage(page);
+      document.newPage();
 
       String icn = codeInfo.getIcn();
       String mcn = icn.substring(0, 15);
@@ -84,26 +72,22 @@ public class BarcodeTest {
         e.printStackTrace();
       }
 
-      // if (codeInfo.getPieceCount() > 1) {
-      // for (int j = 2; j <= codeInfo.getPieceCount(); j++) {
-      // document.newPage();
-      //
-      // counts =
-      // "Item " + codeInfo.getItemNum() + " of " + codeInfo.getTotalItems() +
-      // ", Piece "
-      // + j + " of " + codeInfo.getPieceCount();
-      //
-      // try {
-      // writeBarcode(document, writer, icn, mcn, counts);
-      // } catch (IOException e) {
-      // e.printStackTrace();
-      // }
-      // }
-      // }
+      for (int j = 1; j <= codeInfo.getPieceCount(); j++) {
+        document.newPage();
+
+        counts =
+                "Item " + codeInfo.getItemNum() + " of " + codeInfo.getTotalItems() + ", Piece "
+                        + j + " of " + codeInfo.getPieceCount();
+
+        try {
+          writeBarcode(document, writer, icn, mcn, counts);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
     }
 
     document.close();
-
   }
 
   private static void writeBarcode(final Document document, PdfWriter writer, final String icn,
@@ -114,50 +98,53 @@ public class BarcodeTest {
       table.setKeepTogether(true);
       table.setHorizontalAlignment(PdfPTable.ALIGN_CENTER);
       table.setSplitRows(false);
-      
+
       Barcode39 icnCode = new Barcode39();
       icnCode.setCode(icn);
       icnCode.setAltText(icn);
       icnCode.setBarHeight(13);
       icnCode.setSize(8);
-      
-      PdfPCell icnCell = new PdfPCell(icnCode.createImageWithBarcode(writer.getDirectContent(), null, null), true);
+
+      PdfPCell icnCell =
+              new PdfPCell(icnCode.createImageWithBarcode(writer.getDirectContent(), null, null),
+                      true);
       icnCell.setBorder(PdfPCell.NO_BORDER);
       table.addCell(icnCell);
-      
+
       PdfPCell countsCell = new PdfPCell();
       countsCell.setBorder(PdfPCell.NO_BORDER);
       Font plainText = FontFactory.getFont(BaseFont.HELVETICA, 6);
-      
+
       Paragraph countsP = new Paragraph(counts, plainText);
       countsP.setAlignment(Paragraph.ALIGN_CENTER);
-//      p.setSpacingBefore(0);
-//      p.setSpacingAfter(0);
+      // p.setSpacingBefore(0);
+      // p.setSpacingAfter(0);
       countsCell.setPadding(0);
       countsCell.addElement(countsP);
       table.addCell(countsCell);
-      
+
       Barcode39 mcnCode = new Barcode39();
       mcnCode.setCode(mcn);
       mcnCode.setAltText(mcn);
       mcnCode.setBarHeight(12);
       mcnCode.setSize(8);
 
-      PdfPCell mcnCell = new PdfPCell(mcnCode.createImageWithBarcode(writer.getDirectContent(), null, null), true);
+      PdfPCell mcnCell =
+              new PdfPCell(mcnCode.createImageWithBarcode(writer.getDirectContent(), null, null),
+                      true);
       mcnCell.setBorder(PdfPCell.NO_BORDER);
       table.addCell(mcnCell);
 
+      // p = new Paragraph();
+      // p.setKeepTogether(true);
+      // p.add(counts);
+      // document.add(p);
+      //
+      // code39 = new Barcode39();
+      // code39.setCode(mcn);
+      // code39.setAltText(mcn);
+      // document.add(code39.createImageWithBarcode(contentBytes, null, null));
 
-//      p = new Paragraph();
-//      p.setKeepTogether(true);
-//      p.add(counts);
-//      document.add(p);
-//
-//      code39 = new Barcode39();
-//      code39.setCode(mcn);
-//      code39.setAltText(mcn);
-//      document.add(code39.createImageWithBarcode(contentBytes, null, null));
-      
       document.add(table);
     } catch (DocumentException e) {
       e.printStackTrace();
